@@ -57,7 +57,7 @@ filtered_signal = butterworth_filter(filtered_high, 20, fs_mean, 'low')
 ![Imagen de WhatsApp 2025-04-04 a las 17 05 47_d314aa91](https://github.com/user-attachments/assets/901fc222-9c4f-4533-8ceb-4c04e34b07ae)
 
 ### Aventanamiento
-Posterior al filtrado de la señal se dividirá la señal registrada en ventanas de tiempo, en este caso se utilizo la tecnica de aventanamiento (poner tecnica usada) mediante el siguiente código realizado en python:
+Posterior al filtrado de la señal se dividirá la señal registrada en ventanas de tiempo, en este caso se utilizo la tecnica de aventanamiento hamming mediante el siguiente código realizado en python:
 ```ruby
 # Definir tamaño de ventana en segundos
 window_size = 1  # 1 segundo por ventana
@@ -87,6 +87,7 @@ Se realizo la presente prueba de hipótesis para verificar si el cambio en la me
 El codigo va aqui
 ```
 ## Resultados obtenidos
-(tener en cuenta los siguientes aspectos:
-*El cambio en la mediana es significativo?
-*Evaluar la disminución de la frecuencia mediana en cada ventana como indicador de la fatiga.)
+* La señal original (Fig. "Señal EMG Original") muestra variaciones de voltaje en el tiempo, con amplitudes entre 0.80 V y 0.84 V, correspondientes a la actividad mioeléctrica del músculo.
+* El espectro de frecuencia (Fig. "Espectro de Frecuencia de la Señal EMG") revela componentes frecuenciales dominantes en el rango típico de señales EMG entre 20 y 500Hz, con magnitudes entre 0.00005 y 0.00035 V.
+* El análisis espectral permitió identificar cambios en la distribución de frecuencias de la señal EMG, donde un incremento en componentes de baja frecuencia y una reducción en la amplitud pueden ser indicativos de fatiga muscular.
+
