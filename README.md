@@ -82,12 +82,55 @@ frequencies = np.fft.fftfreq(samples_per_window, d=1/fs_mean)
 ![Imagen de WhatsApp 2025-04-04 a las 17 06 38_fb3093bf](https://github.com/user-attachments/assets/4dd12541-c2a5-412b-b1a0-43e7b39db01e)
 
 ## Prueba de hipótesis
-Se realizo la presente prueba de hipótesis para verificar si el cambio en la mediana es significativo estadísticamente de la siguiente manera:
+Se realizo la presente prueba de hipótesis para verificar si el cambio en la mediana es significativo estadísticamente.
+Inicialmente se tomaron la primer y última contracción para así poder obtener los estadísticos de cada una. 
 ```ruby
-El codigo va aqui
+# Contracción 1 (0-20s)
+mask1 = (tiempo >= 0) & (tiempo <= 25)
+contraction1 = voltaje[mask1]
+n1 = len(contraction1)
+mean1 = np.mean(contraction1)
+std1 = np.std(contraction1, ddof=1)
+
+# Contracción 2 (60-80s)
+mask2 = (tiempo >= 60) & (tiempo <= 80)
+contraction2 = voltaje[mask2]
+n2 = len(contraction2)
+mean2 = np.mean(contraction2)
+std2 = np.std(contraction2, ddof=1)
+```
+Posterior a esto se calculo el t para posicionarlo en la gráfica y así poder saber si se rechaza la hipótesis nula, también se hallo el tcrit para saber delimitar cada cola.
+```ruby
+t = (mean1 - mean2) / np.sqrt((std1**2 / n1) + (std2**2 / n2))
+t_crit = t_dist.ppf(1 - alpha / 2, df)
+```
+Para poder visualizar de forma más clara el resultado de nuetsro t calculado respecto a los demás valores, se hizo una gráfica que tuviera todos los valores calculados relacionados entre si. 
+```ruby
+# Rango para eje x (valores t)
+t_vals = np.linspace(-4, 4, 400)
+pdf_vals = t_dist.pdf(t_vals, df)
+
+plt.figure(figsize=(10, 4))
+plt.plot(t_vals, pdf_vals, label=f'Distribución t (df={df})', color='black')
+plt.axvline(t_crit, color='red', linestyle='--', label=f't_crit = ±{t_crit:.2f}')
+plt.axvline(-t_crit, color='red', linestyle='--')
+plt.axvline(t, color='blue', linestyle='-', linewidth=2, label=f'Estadístico t = {t:.2f}')
+
+# Sombrear regiones de rechazo
+plt.fill_between(t_vals, 0, pdf_vals, where=(t_vals >= t_crit), color='red', alpha=0.2)
+plt.fill_between(t_vals, 0, pdf_vals, where=(t_vals <= -t_crit), color='red', alpha=0.2)
+
+plt.title("Test de dos colas (Nivel de significancia 5%)")
+plt.xlabel("t")
+plt.ylabel("Densidad de probabilidad")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
 ```
 ## Resultados obtenidos
 * La señal original (Fig. "Señal EMG Original") muestra variaciones de voltaje en el tiempo, con amplitudes entre 0.80 V y 0.84 V, correspondientes a la actividad mioeléctrica del músculo.
 * El espectro de frecuencia (Fig. "Espectro de Frecuencia de la Señal EMG") revela componentes frecuenciales dominantes en el rango típico de señales EMG entre 20 y 500Hz, con magnitudes entre 0.00005 y 0.00035 V.
 * El análisis espectral permitió identificar cambios en la distribución de frecuencias de la señal EMG, donde un incremento en componentes de baja frecuencia y una reducción en la amplitud pueden ser indicativos de fatiga muscular.
+* Respecto al análisis de hipótesis se puede evidenciar que el valor de t se encuentra fuera de la grafica puede ser debido a que el valor de las muestras es muy grande respecto a las desviaciones estándar, generando que el valor de t sea grande. Además de esto se evidencia que el valor de las media no es el mismo. 
 
