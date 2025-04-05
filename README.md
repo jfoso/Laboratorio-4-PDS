@@ -3,6 +3,36 @@
 Aplicar técnicas de filtrado de señales continuas y análisis espectral a una señal electromiográfica (EMG) para identificar patrones asociados a la fatiga muscular, evaluando su contenido frecuencial mediante procesamiento digital de señales.
 ## Procedimiento
 Para empezar a realizar nuestro laboratorio debemos tener en cuenta que es una EMG (Electromiograma). Esta es una grabación de la actividad eléctrica de los músculos (actividad mioeléctrica, en este caso se tomaran los datos mioelectricos mediante electrodos superficiales, utilizando dos electrodos activos y un electrodo referencia tierra ubicados en la piel sobre el músculo a evaluar, esta señal será la diferencia entre las señales medidas por los electrodos activos.Teniendo esto en cuenta, se colocaran los electrodos al músculo a analizar mediante una interfaz realizada en python donde se adquiere la señal emg y se capturan los datos obtenidos. Para obtener la señal deseada se le pedirà al sujeto que realice una contracción muscular continua hasta fatigar el músculo a evaluar para registrar la señal Emg en tiempo real en todo el proceso de la fatiga donde se obtuvo la siguiente señal:
+```ruby
+    def conectar_daq(self):
+        """Inicia la adquisición desde el DAQ."""
+        if self.daq_task is None:
+            try:
+                self.daq_task = nidaqmx.Task()
+                self.daq_task.ai_channels.add_ai_voltage_chan(self.channel)
+                self.daq_task.timing.cfg_samp_clk_timing(self.sampling_rate, sample_mode=AcquisitionType.CONTINUOUS)
+                
+                self.stop_event = threading.Event()
+                self.hilo_daq = threading.Thread(target=self.recibir_datos)
+                self.hilo_daq.start()
+                
+                self.connect_btn.setText("DESCONECTAR")
+                print("DAQ conectado y adquiriendo datos...")
+            except Exception as e:
+                print("Error al conectar con DAQ:", e)
+        else:
+            self.desconectar_daq()
+
+    def desconectar_daq(self):
+        """Detiene la adquisición y desconecta el DAQ."""
+        if self.daq_task is not None:
+            self.stop_event.set()
+            self.hilo_daq.join()
+            self.daq_task.close()
+            self.daq_task = None
+            self.connect_btn.setText("CONECTAR")
+            print("DAQ desconectado.")
+```
 ![Imagen de WhatsApp 2025-04-04 a las 17 05 28_6ea5332a](https://github.com/user-attachments/assets/89cabc90-b14f-4c3c-b3a3-4ca1a3dfca8f)
 
 Posterior a esto se procesará la señal obtenida de la siguiente manera:
