@@ -24,6 +24,7 @@ filtered_high = butterworth_filter(voltaje, 20, fs_mean, 'high')
 # Aplicar filtro pasa bajas (60 Hz)
 filtered_signal = butterworth_filter(filtered_high, 20, fs_mean, 'low')
 ```
+![Imagen de WhatsApp 2025-04-04 a las 17 05 47_d314aa91](https://github.com/user-attachments/assets/901fc222-9c4f-4533-8ceb-4c04e34b07ae)
 
 ### Aventanamiento
 Posterior al filtrado de la señal se dividirá la señal registrada en ventanas de tiempo, en este caso se utilizo la tecnica de aventanamiento (poner tecnica usada) mediante el siguiente código realizado en python:
@@ -39,6 +40,8 @@ windows = [filtered_signal[i * samples_per_window:(i + 1) * samples_per_window] 
 # Aplicar ventana de Hamming
 windowed_signals = [w * np.hamming(len(w)) for w in windows]
 ```
+![Imagen de WhatsApp 2025-04-04 a las 17 06 09_42064d30](https://github.com/user-attachments/assets/a84f1096-dcc6-48ee-ae4e-900eaa23eb63)
+
 ### Análisis Espectral
 Despues de realizar el aventanamiento se realizará el análisis espectral de cada ventana utilizando la Transformada rapida de fourier (FFT) con la intención de obtener el espectro de frecuencias en intervalos específicos de la señal obtenida mediante el siguiente código:
 ```ruby
@@ -46,6 +49,8 @@ Despues de realizar el aventanamiento se realizará el análisis espectral de ca
 fft_results = [np.fft.fft(w) for w in windowed_signals]
 frequencies = np.fft.fftfreq(samples_per_window, d=1/fs_mean)
 ```
+![Imagen de WhatsApp 2025-04-04 a las 17 06 38_fb3093bf](https://github.com/user-attachments/assets/4dd12541-c2a5-412b-b1a0-43e7b39db01e)
+
 ## Prueba de hipótesis
 Se realizo la presente prueba de hipótesis para verificar si el cambio en la mediana es significativo estadísticamente de la siguiente manera:
 ```ruby
